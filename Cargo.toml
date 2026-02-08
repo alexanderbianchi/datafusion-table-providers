@@ -15,8 +15,34 @@
 # specific language governing permissions and limitations
 # under the License.
 
+[patch.crates-io]
+arrow = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-arith = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-array = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-buffer = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-cast = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-csv = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-data = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-flight = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-ipc = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-json = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-ord = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-row = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-schema = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-select = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+arrow-string = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+parquet = { git = "https://github.com/DataDog/arrow-rs", rev = "dd2c5a10fd433374c896d62e9e4fee92b4717a7e" }
+datafusion = { git = "https://github.com/DataDog/datafusion", rev = "cd8087121c9eed1e386928ad0a05fa3391254e6e" }
+datafusion-expr = { git = "https://github.com/DataDog/datafusion", rev = "cd8087121c9eed1e386928ad0a05fa3391254e6e" }
+datafusion-physical-expr = { git = "https://github.com/DataDog/datafusion", rev = "cd8087121c9eed1e386928ad0a05fa3391254e6e" }
+datafusion-physical-plan = { git = "https://github.com/DataDog/datafusion", rev = "cd8087121c9eed1e386928ad0a05fa3391254e6e" }
+datafusion-proto = { git = "https://github.com/DataDog/datafusion", rev = "cd8087121c9eed1e386928ad0a05fa3391254e6e" }
+datafusion-proto-common = { git = "https://github.com/DataDog/datafusion", rev = "cd8087121c9eed1e386928ad0a05fa3391254e6e" }
+datafusion-substrait = { git = "https://github.com/DataDog/datafusion", rev = "cd8087121c9eed1e386928ad0a05fa3391254e6e" }
+datafusion-federation = { git = "https://github.com/DataDog/datafusion-federation", rev = "d9502c5d374b9d3ac8aa6bd850149587552ffc31" }
+
 [workspace]
-members = ["core", "python"]
+members = ["core"]
 resolver = "2"
 
 [workspace.package]
