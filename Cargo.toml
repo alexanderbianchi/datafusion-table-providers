@@ -28,15 +28,15 @@ license = "Apache-2.0"
 description = "Extend the capabilities of DataFusion to support additional data sources via implementations of the `TableProvider` trait."
 
 [workspace.dependencies]
-arrow = "57.2"
-arrow-array = { version = "57.2" }
-arrow-flight = { version = "57.2", features = [
+arrow = "57"
+arrow-array = { version = "57" }
+arrow-flight = { version = "57", features = [
   "flight-sql-experimental",
   "tls-ring",
 ] }
-arrow-ipc = { version = "57.2" }
-arrow-schema = { version = "57.2", features = ["serde"] }
-arrow-json = "57.2"
+arrow-ipc = { version = "57" }
+arrow-schema = { version = "57", features = ["serde"] }
+arrow-json = "57"
 arrow-odbc = { version = "21.0" }
 datafusion = { version = "52.0", default-features = false }
 datafusion-expr = { version = "52.0" }
