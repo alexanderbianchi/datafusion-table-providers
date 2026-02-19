@@ -14,6 +14,7 @@ use native_tls::{Certificate, TlsConnector};
 use postgres_native_tls::MakeTlsConnector;
 use secrecy::{ExposeSecret, SecretBox, SecretString};
 use snafu::{prelude::*, ResultExt};
+use tokio::runtime::Handle;
 use tokio_postgres;
 
 use super::{runtime::run_async_with_tokio, DbConnectionPool};
@@ -75,6 +76,9 @@ pub enum Error {
 
     #[snafu(display("Authentication failed. Verify username and password."))]
     InvalidUsernameOrPassword { source: tokio_postgres::Error },
+
+    #[snafu(display("Task failed to execute on IO runtime.\n{source}"))]
+    IoRuntimeError { source: tokio::task::JoinError },
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -84,6 +88,7 @@ pub struct PostgresConnectionPool {
     pool: Arc<bb8::Pool<PostgresConnectionManager<MakeTlsConnector>>>,
     join_push_down: JoinPushDown,
     unsupported_type_action: UnsupportedTypeAction,
+    io_handle: Option<Handle>,
 }
 
 impl PostgresConnectionPool {
@@ -218,6 +223,7 @@ impl PostgresConnectionPool {
             pool: Arc::new(pool.clone()),
             join_push_down,
             unsupported_type_action: UnsupportedTypeAction::default(),
+            io_handle: None,
         })
     }
 
@@ -228,6 +234,13 @@ impl PostgresConnectionPool {
         self
     }
 
+    /// Route all Postgres connection background tasks to a dedicated IO runtime.
+    #[must_use]
+    pub fn with_io_runtime(mut self, handle: Handle) -> Self {
+        self.io_handle = Some(handle);
+        self
+    }
+
     /// Returns a direct connection to the underlying database.
     ///
     /// # Errors
@@ -235,7 +248,14 @@ impl PostgresConnectionPool {
     /// Returns an error if there is a problem creating the connection pool.
     pub async fn connect_direct(&self) -> super::Result<PostgresConnection> {
         let pool = Arc::clone(&self.pool);
-        let conn = pool.get_owned().await.context(ConnectionPoolRunSnafu)?;
+        let conn = if let Some(handle) = &self.io_handle {
+            handle
+                .spawn(async move { pool.get_owned().await.context(ConnectionPoolRunSnafu) })
+                .await
+                .context(IoRuntimeSnafu)??
+        } else {
+            pool.get_owned().await.context(ConnectionPoolRunSnafu)?
+        };
         Ok(PostgresConnection::new(conn))
     }
 }
@@ -392,8 +412,15 @@ impl
         >,
     > {
         let pool = Arc::clone(&self.pool);
-        let get_conn = async || pool.get_owned().await.context(ConnectionPoolRunSnafu);
-        let conn = run_async_with_tokio(get_conn).await?;
+        let conn = if let Some(handle) = &self.io_handle {
+            handle
+                .spawn(async move { pool.get_owned().await.context(ConnectionPoolRunSnafu) })
+                .await
+                .context(IoRuntimeSnafu)??
+        } else {
+            let get_conn = async || pool.get_owned().await.context(ConnectionPoolRunSnafu);
+            run_async_with_tokio(get_conn).await?
+        };
         Ok(Box::new(
             PostgresConnection::new(conn)
                 .with_unsupported_type_action(self.unsupported_type_action),
